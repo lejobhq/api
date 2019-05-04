@@ -3,11 +3,14 @@ const { OAuth2Client } = require("google-auth-library");
 
 const app = express();
 
-// Load local environment variables
-require("dotenv").config({ path: ".env" });
+// Load environment variables
+require("dotenv").config({
+  path: process.env.NODE_ENV === "production" ? ".env" : ".env.dev"
+});
 
 app.use(express.json());
 
+// Auth
 app.post("/auth", async (req, res) => {
   const CLIENT_ID = process.env.GOOGLE_SIGNIN_CLIENT_ID;
   const client = new OAuth2Client(CLIENT_ID);
