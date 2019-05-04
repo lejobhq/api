@@ -2,6 +2,7 @@ const express = require("express");
 const { OAuth2Client } = require("google-auth-library");
 const Firestore = require("@google-cloud/firestore");
 const FieldValue = require("firebase-admin").firestore.FieldValue;
+const jwt = require("jsonwebtoken");
 
 const app = express();
 
@@ -16,6 +17,49 @@ require("dotenv").config({
 const db = new Firestore({
   projectId: process.env.GOOGLE_CLOUD_PROJECT,
   keyFilename: process.env.FIRESTORE_KEY_FILE_PATH
+});
+
+// JWT middleware
+const validateSession = (req, res, next) => {
+  let jwt_token = req.headers["x-access-token"] || req.headers["authorization"];
+  if (!jwt_token) {
+    res.status(401);
+    res.send({ error: "Unauthorized" });
+    return;
+  }
+
+  if (jwt_token.startsWith("Bearer ")) {
+    jwt_token = jwt_token.slice(7);
+  }
+
+  jwt.verify(jwt_token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      res.status(401);
+      res.send({ error: "Unauthorized" });
+      return;
+    }
+    req.userId = decoded.userId;
+    next();
+  });
+};
+
+// Test JWT
+app.get("/user", validateSession, (req, res) => {
+  const usersRef = db.collection("users");
+  usersRef
+    .doc(req.userId)
+    .get()
+    .then(doc => {
+      if (!doc.exists) {
+        res.status(404);
+        res.send({
+          error: "Not Found"
+        });
+        return;
+      }
+
+      res.send({ data: doc.data() });
+    });
 });
 
 // Auth
@@ -63,13 +107,16 @@ app.post("/auth", async (req, res) => {
           userId = newUser.id;
         } else {
           // Retrieve the user ID from DB
-          userId = snapshot[0].id;
+          snapshot.forEach(doc => {
+            userId = doc.id;
+          });
         }
 
         // TODO: generate and send JWT
+        const jwt_token = jwt.sign({ userId }, process.env.JWT_SECRET, {});
 
         res.status(200);
-        res.send({ userId });
+        res.send({ jwt: jwt_token });
       });
   }
 
