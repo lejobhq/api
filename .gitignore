@@ -83,3 +83,6 @@ typings/
 
 # DynamoDB Local files
 .dynamodb/
+
+# Google Cloud Platform
+firestore.keyfile.json
