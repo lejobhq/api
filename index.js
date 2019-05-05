@@ -62,6 +62,151 @@ app.get("/user", validateSession, (req, res) => {
     });
 });
 
+// Jobs
+const STATUS = {
+  CREATED: "CREATED",
+  APPLIED: "APPLIED",
+  REJECTED: "REJECTED",
+  NO_RESPONSE: "NO_RESPONSE",
+  NO_LONGER_INTERESTED: "NO_LONGER_INTERESTED",
+  INTERVIEW_ROUND_1: "INTERVIEW_ROUND_1",
+  INTERVIEW_ROUND_2: "INTERVIEW_ROUND_2",
+  INTERVIEW_ROUND_3: "INTERVIEW_ROUND_3",
+  INTERVIEW_ROUND_4: "INTERVIEW_ROUND_4",
+  INTERVIEW_ROUND_5: "INTERVIEW_ROUND_5",
+  INTERVIEW_ROUND_6: "INTERVIEW_ROUND_6",
+  INTERVIEW_ROUND_7: "INTERVIEW_ROUND_7",
+  INTERVIEW_ROUND_8: "INTERVIEW_ROUND_8",
+  INTERVIEW_ROUND_9: "INTERVIEW_ROUND_9",
+  INTERVIEW_ROUND_10: "INTERVIEW_ROUND_10",
+  OFFER: "OFFER",
+  NEGOTIATING: "NEGOTIATING",
+  ACCEPTED: "ACCEPTED"
+};
+
+app.get("/jobs", validateSession, async (req, res) => {
+  const usersJobsRef = db
+    .collection("users")
+    .doc(req.userId)
+    .collection("jobs");
+  const usersJobs = await usersJobsRef.get().then(snapshot => {
+    const usersJobs = [];
+    if (!snapshot.empty) {
+      snapshot.forEach(doc => {
+        usersJobs.push({ usersJobId: doc.id, ...doc.data() });
+      });
+    }
+    return usersJobs;
+  });
+
+  const jobsRef = db.collection("jobs");
+  const jobs = await Promise.all(
+    usersJobs.map(
+      async ({ id }) =>
+        await jobsRef
+          .doc(id)
+          .get()
+          .then(doc => {
+            if (doc.exists) {
+              return { id: doc.id, ...doc.data() };
+            }
+          })
+    )
+  );
+
+  res.send({
+    data: {
+      jobs: usersJobs.map(usersJob => ({
+        ...jobs.find(job => job.id === usersJob.id),
+        ...usersJob
+      }))
+    }
+  });
+  return;
+});
+
+app.post("/job", validateSession, async (req, res) => {
+  // TODO: Input validation
+  const url = req.body.url.split("?")[0]; // Remove search string
+
+  // Save the job in the "jobs" collection
+  const jobsRef = db.collection("jobs");
+  const jobId = await jobsRef
+    .where("url", "==", url)
+    .get()
+    .then(async snapshot => {
+      if (snapshot.empty) {
+        const timestamp = FieldValue.serverTimestamp();
+        const newJob = await jobsRef.add({
+          url: url,
+          created_at: timestamp,
+          updated_at: timestamp
+        });
+        return newJob.id;
+      }
+
+      let id;
+      snapshot.forEach(doc => (id = doc.id));
+      return id;
+    });
+
+  // Save the job in the "users"/"jobs" collection
+  const usersJobsRef = db
+    .collection("users")
+    .doc(req.userId)
+    .collection("jobs");
+
+  await usersJobsRef
+    .where("url", "==", url)
+    .get()
+    .then(async snapshot => {
+      if (snapshot.empty) {
+        const timestamp = FieldValue.serverTimestamp();
+        const newUsersJob = await usersJobsRef.add({
+          id: jobId,
+          url: url,
+          timeline: [
+            {
+              status: STATUS.CREATED,
+              date: Date.now()
+            }
+          ],
+          created_at: timestamp,
+          updated_at: timestamp
+        });
+        res.send({ data: { id: newUsersJob.id } });
+        return;
+      }
+      res.status(400);
+      res.send({
+        error: "Bad Request",
+        errorText: "Job already exists for this user."
+      });
+    });
+});
+
+app.put("/job", validateSession, async (req, res) => {
+  // TODO: Input validation
+  const usersJobId = req.body.usersJobId;
+  const usersJobsRef = db
+    .collection("users")
+    .doc(req.userId)
+    .collection("jobs");
+
+  const timestamp = FieldValue.serverTimestamp();
+  await usersJobsRef.doc(usersJobId).update({
+    timeline: FieldValue.arrayUnion({
+      status: STATUS[req.body.status],
+      date: Date.now()
+    }),
+    updated_at: timestamp
+  });
+
+  res.status(202);
+  res.send({});
+  return;
+});
+
 // Auth
 app.post("/auth", async (req, res) => {
   const CLIENT_ID = process.env.GOOGLE_SIGNIN_CLIENT_ID;
