@@ -11,25 +11,19 @@ function onSignIn(googleUser) {
     .then(res => res.json())
     .then(({ jwt }) => {
       localStorage.setItem("jwt", jwt);
-      // Test JWT
-      fetch("/user", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Access-Token": localStorage.getItem("jwt")
-        }
-      })
-        .then(res => res.json())
-        .then(console.log)
-        .catch(console.error);
+      router.navigate("home");
     })
-    .catch(console.error);
+    .catch(err => {
+      console.error(err);
+      router.navigate("landing");
+    });
 }
 
 function onSignOut() {
   var auth2 = gapi.auth2.getAuthInstance();
   auth2.signOut().then(function() {
-    // TODO
+    localStorage.removeItem("jwt");
+    router.navigate("landing");
     console.log("User signed out.");
   });
 }

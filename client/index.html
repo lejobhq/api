@@ -12,11 +12,22 @@
     <script src="https://apis.google.com/js/platform.js" async defer></script>
 
     <title>LeJob HQ</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
   <body>
-    Hello world!
-    <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
-    <a href="#" onclick="onSignOut();">Sign out</a>
+    <div id="loading" class="page">
+      Loading ...
+    </div>
+    <div id="landing" class="page">
+      Hello world!
+      <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+    </div>
+    <div id="home" class="page">
+      <p>Home</p>
+      <p>Welcome <span data-value="name"></span>!</p>
+      <button onclick="onSignOut();">Sign out</button>
+    </div>
     <script src="auth.js"></script>
+    <script src="router.js"></script>
   </body>
 </html>
