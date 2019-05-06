@@ -86,3 +86,6 @@ typings/
 
 # Google Cloud Platform
 firestore.keyfile.json
+
+# MacOS X
+.DS_Store

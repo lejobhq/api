@@ -13,26 +13,93 @@
 
     <title>LeJob HQ</title>
     <link rel="stylesheet" type="text/css" href="styles/main.css" />
+    <link rel="stylesheet" type="text/css" href="styles/loader.css" />
+
+    <!-- Bulma -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css" crossorigin="anonymous">
+    <!-- /Bulma -->
+    <!-- FontAwesome 5 -->
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <!-- /FontAwesome 5 -->
   </head>
   <body>
-    <div id="loading" class="page">
-      Loading ...
-    </div>
-    <div id="landing" class="page">
-      Hello world!
-      <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
-    </div>
-    <div id="home" class="page">
-      <p>Home</p>
-      <p>Welcome <span data-value="name"></span>!</p>
-      <p>Jobs</p>
-      <ul data-value="jobs"></ul>
-      <label>Add New Job
-        <input type="text" name="new-job" />
-      </label>
-      <button onclick="onAddNewJob();">Add</button>
-      <button onclick="onSignOut();">Sign out</button>
-    </div>
+    <header>
+      <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+          <a class="navbar-item" href="https://lejobhq.appspot.com">
+            <img src="/images/logo.png">
+          </a>
+        </div>
+      
+        <div class="navbar-menu is-active">
+          <div class="navbar-end">
+            <div class="navbar-item">
+              <div class="buttons">
+                <a class="button is-light signout hidden" onclick="onSignOut();">
+                  Log Out
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="bd-main">
+
+      <div id="loading" class="page container is-fluid">
+        <div class="loading bar">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+
+      <div id="landing" class="page container is-fluid">
+        <section class="hero is-medium is-bold">
+          <div class="hero-body">
+            <div class="container">
+              <h1 class="title">
+                LeJob HQ
+              </h1>
+              <h2 class="subtitle">
+                Your Job Application Tracking System!
+              </h2>
+            </div>
+          </div>
+        </section>
+        <div class="container">
+          <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+        </div>
+      </div>
+
+      <div id="home" class="page container is-fluid">
+        <p>Home</p>
+        <p>Welcome <span data-value="name"></span>!</p>
+        <p>Jobs</p>
+        <ul data-value="jobs"></ul>
+        <label>Add New Job
+          <input type="text" name="new-job" />
+        </label>
+        <button onclick="onAddNewJob();">Add</button>
+        <button onclick="onSignOut();">Sign out</button>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="content has-text-centered">
+        <p>
+          <strong>LeJob HQ</strong> by <a href="antoniovdlc.me">Antonio Villagra De La Cruz</a>. The <a href="https://github.com/lejobhq">source code</a> is licensed
+          <a href="http://opensource.org/licenses/mit-license.php">MIT</a>.
+        </p>
+      </div>
+    </footer>
+
     <script src="scripts/handlers.js"></script>
     <script src="scripts/framework.js"></script>
     <script src="scripts/index.js"></script>

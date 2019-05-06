@@ -11,19 +11,23 @@ function onSignIn(googleUser) {
     .then(res => res.json())
     .then(({ jwt }) => {
       localStorage.setItem("jwt", jwt);
+      document.querySelector(".signout").classList.remove("hidden");
       router.navigate("home");
     })
     .catch(err => {
       console.error(err);
       router.navigate("landing");
+      document.querySelector(".signout").classList.add("hidden");
     });
 }
 
 function onSignOut() {
   var auth2 = gapi.auth2.getAuthInstance();
+  router.navigate("loading");
   auth2.signOut().then(function() {
     localStorage.removeItem("jwt");
     router.navigate("landing");
+    document.querySelector(".signout").classList.add("hidden");
     console.log("User signed out.");
   });
 }
