@@ -51,6 +51,15 @@ class Page {
                 element.innerText = value;
               }
               break;
+            case "UL":
+              element.innerHTML = value
+                .map(
+                  v => `
+                  <li id=${v.id}>${v.url}</li>
+                `
+                )
+                .join("");
+              break;
             // TODO: Add more tag handlers
             default:
               break;
@@ -63,7 +72,7 @@ class Page {
 const pages = {
   loading: new Page("loading"),
   landing: new Page("landing"),
-  home: new Page("home", [{ uri: "/user" }])
+  home: new Page("home", [{ uri: "/user" }, { uri: "/jobs" }])
 };
 
 // Redux-like router

@@ -25,6 +25,12 @@
     <div id="home" class="page">
       <p>Home</p>
       <p>Welcome <span data-value="name"></span>!</p>
+      <p>Jobs</p>
+      <ul data-value="jobs"></ul>
+      <label>Add New Job
+        <input type="text" name="new-job" />
+      </label>
+      <button onclick="onAddNewJob();">Add</button>
       <button onclick="onSignOut();">Sign out</button>
     </div>
     <script src="auth.js"></script>

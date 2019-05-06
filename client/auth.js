@@ -27,3 +27,23 @@ function onSignOut() {
     console.log("User signed out.");
   });
 }
+
+function onAddNewJob() {
+  const url = document.querySelector(`input[name=new-job]`).value;
+  if (!url) {
+    return;
+  }
+  document.querySelector(`input[name=new-job]`).value = "";
+
+  fetch("/job", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Access-Token": localStorage.getItem("jwt")
+    },
+    body: JSON.stringify({ url })
+  })
+    .then(res => res.json())
+    .then(() => router.navigate("home"))
+    .catch(console.error);
+}
