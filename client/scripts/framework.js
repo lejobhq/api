@@ -69,12 +69,6 @@ class Page {
   }
 }
 
-const pages = {
-  loading: new Page("loading"),
-  landing: new Page("landing"),
-  home: new Page("home", [{ uri: "/user" }, { uri: "/jobs" }])
-};
-
 // Redux-like router
 const createRouter = (pages = []) => {
   let _route;
@@ -103,7 +97,3 @@ const createRouter = (pages = []) => {
     getRoute: _ => _route
   };
 };
-
-// Initial state
-const router = createRouter(pages);
-router.navigate("loading");
