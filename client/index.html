@@ -14,40 +14,22 @@
     <title>LeJob HQ</title>
     <link rel="stylesheet" type="text/css" href="styles/main.css" />
     <link rel="stylesheet" type="text/css" href="styles/loader.css" />
-
-    <!-- Bulma -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css" crossorigin="anonymous">
-    <!-- /Bulma -->
-    <!-- FontAwesome 5 -->
-    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-    <!-- /FontAwesome 5 -->
   </head>
   <body>
     <header>
       <nav class="navbar" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
           <a class="navbar-item" href="https://lejobhq.appspot.com">
             <img src="/images/logo.png">
           </a>
-        </div>
-      
-        <div class="navbar-menu is-active">
-          <div class="navbar-end">
-            <div class="navbar-item">
-              <div class="buttons">
-                <a class="button is-light signout hidden" onclick="onSignOut();">
-                  Log Out
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+          <a class="button signout hidden" onclick="onSignOut();">
+            Log Out
+          </a>
       </nav>
     </header>
 
     <main class="bd-main">
 
-      <div id="loading" class="page container is-fluid">
+      <div id="loading" class="page container">
         <div class="loading bar">
           <div></div>
           <div></div>
@@ -60,8 +42,8 @@
         </div>
       </div>
 
-      <div id="landing" class="page container is-fluid">
-        <section class="hero is-medium is-bold">
+      <div id="landing" class="page container">
+        <section class="hero">
           <div class="hero-body">
             <div class="container">
               <h1 class="title">
@@ -78,7 +60,7 @@
         </div>
       </div>
 
-      <div id="home" class="page container is-fluid">
+      <div id="home" class="page container">
         <p>Home</p>
         <p>Welcome <span data-value="name"></span>!</p>
         <p>Jobs</p>
@@ -92,7 +74,7 @@
     </main>
 
     <footer class="footer">
-      <div class="content has-text-centered">
+      <div class="content">
         <p>
           <strong>LeJob HQ</strong> by <a href="antoniovdlc.me">Antonio Villagra De La Cruz</a>. The <a href="https://github.com/lejobhq">source code</a> is licensed
           <a href="http://opensource.org/licenses/mit-license.php">MIT</a>.
