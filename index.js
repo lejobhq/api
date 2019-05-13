@@ -3,6 +3,8 @@ const { OAuth2Client } = require("google-auth-library");
 const Firestore = require("@google-cloud/firestore");
 const FieldValue = require("firebase-admin").firestore.FieldValue;
 const jwt = require("jsonwebtoken");
+const puppeteer = require("puppeteer");
+const cheerio = require("cheerio");
 
 const app = express();
 
@@ -129,6 +131,58 @@ app.post("/job", validateSession, async (req, res) => {
   // TODO: Input validation
   const url = req.body.url.split("?")[0]; // Remove search string
 
+  // Parse the job offer
+  function parseStackOverflow(html) {
+    const $ = cheerio.load(html);
+    const [title, company] = $("title")
+      .text()
+      .replace("  - Stack Overflow", "")
+      .split(" at ");
+    const logo = $(".job-details--header .s-avatar .hmx100.wmx100").attr("src");
+    const visa = !!$(".-visa").length;
+    const relocation = !!$(".-relocation").length;
+    const experience = $(".job-details--about")
+      .children()
+      .eq(0)
+      .children()
+      .eq(1)
+      .children(".fw-bold")
+      .text();
+    const company_size = $(".job-details--about")
+      .children()
+      .eq(1)
+      .children()
+      .eq(1)
+      .children(".fw-bold")
+      .text();
+    const technologies = $(".job-details__spaced .post-tag.job-link")
+      .map((_, el) => $(el).text())
+      .get();
+
+    return {
+      title,
+      company,
+      logo,
+      visa,
+      relocation,
+      experience,
+      company_size,
+      technologies
+    };
+  }
+
+  let metadata = {};
+  await puppeteer
+    .launch()
+    .then(browser => browser.newPage())
+    .then(page => page.goto(url).then(_ => page.content()))
+    .then(html => {
+      if (url.startsWith("https://stackoverflow.com/jobs/")) {
+        metadata = parseStackOverflow(html);
+      }
+    })
+    .catch(err => console.error(err));
+
   // Save the job in the "jobs" collection
   const jobsRef = db.collection("jobs");
   const jobId = await jobsRef
@@ -139,6 +193,7 @@ app.post("/job", validateSession, async (req, res) => {
         const timestamp = FieldValue.serverTimestamp();
         const newJob = await jobsRef.add({
           url: url,
+          ...metadata,
           created_at: timestamp,
           updated_at: timestamp
         });
