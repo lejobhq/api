@@ -39,7 +39,7 @@ function onAddNewJob() {
   }
   document.querySelector(`input[name=new-job]`).value = "";
 
-  fetch("/job", {
+  fetch("/api/job", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

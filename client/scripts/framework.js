@@ -12,7 +12,7 @@ class Page {
       console.log(`Fetching data for ${this.id} ...`);
       await Promise.all(
         this.resources.map(resource =>
-          fetch(resource.uri, {
+          fetch(`/api${resource.uri}`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
