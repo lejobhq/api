@@ -1,6 +1,5 @@
 const FieldValue = require("firebase-admin").firestore.FieldValue;
-const puppeteer = require("puppeteer");
-const cheerio = require("cheerio");
+const fetch = require("node-fetch");
 
 const db = require("../../../db");
 const STATUS = require("../../../consts").STATUS;
@@ -10,54 +9,26 @@ const post = async (req, res) => {
   const url = req.body.url.split("?")[0]; // Remove search string
 
   // Parse the job offer
-  function parseStackOverflow(html) {
-    const $ = cheerio.load(html);
-    const [title, company] = $("title")
-      .text()
-      .replace("  - Stack Overflow", "")
-      .split(" at ");
-    const logo = $(".job-details--header .s-avatar .hmx100.wmx100").attr("src");
-    const visa = !!$(".-visa").length;
-    const relocation = !!$(".-relocation").length;
-    const experience = $(".job-details--about")
-      .children()
-      .eq(0)
-      .children()
-      .eq(1)
-      .children(".fw-bold")
-      .text();
-    const company_size = $(".job-details--about")
-      .children()
-      .eq(1)
-      .children()
-      .eq(1)
-      .children(".fw-bold")
-      .text();
-    const technologies = $(".job-details__spaced .post-tag.job-link")
-      .map((_, el) => $(el).text())
-      .get();
-
-    return {
-      title,
-      company,
-      logo,
-      visa,
-      relocation,
-      experience,
-      company_size,
-      technologies
-    };
-  }
-
   let metadata = {};
-  await puppeteer
-    .launch()
-    .then(browser => browser.newPage())
-    .then(page => page.goto(url).then(_ => page.content()))
-    .then(html => {
-      if (url.startsWith("https://stackoverflow.com/jobs/")) {
-        metadata = parseStackOverflow(html);
+  const functionURL =
+    "https://us-central1-lejobhq.cloudfunctions.net/parse-job-info";
+  await fetch(functionURL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ url })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        throw new Error(
+          `Error ${data.error.status}: "${
+            data.error.text
+          }" for Cloud Function "${functionURL}"`
+        );
       }
+      metadata = data;
     })
     .catch(err => console.error(err));
 
