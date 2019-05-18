@@ -1,0 +1,21 @@
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    entrypoint: "bash"
+    args:
+      [
+        "-c",
+        "docker build -t gcr.io/$PROJECT_ID/appengine/lejobhq-api:latest -f Dockerfile .",
+      ]
+
+  # Push Images
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/appengine/lejobhq-api:latest"]
+
+  # Deploy to GAE
+  - name: "gcr.io/cloud-builders/gcloud"
+    args:
+      - "app"
+      - "deploy"
+      - "app.yaml"
+      - "--image-url"
+      - "gcr.io/$PROJECT_ID/appengine/lejobhq-api:latest"
