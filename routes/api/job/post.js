@@ -8,30 +8,6 @@ const post = async (req, res) => {
   // TODO: Input validation
   const url = req.body.url.split("?")[0]; // Remove search string
 
-  // Parse the job offer
-  let metadata = {};
-  const functionURL =
-    "https://us-central1-lejobhq.cloudfunctions.net/parse-job-info";
-  await fetch(functionURL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ url })
-  })
-    .then(res => res.json())
-    .then(data => {
-      if (data.error) {
-        throw new Error(
-          `Error ${data.error.status}: "${
-            data.error.text
-          }" for Cloud Function "${functionURL}"`
-        );
-      }
-      metadata = data;
-    })
-    .catch(err => console.error(err));
-
   // Save the job in the "jobs" collection
   const jobsRef = db.collection("jobs");
   const jobId = await jobsRef
@@ -39,6 +15,31 @@ const post = async (req, res) => {
     .get()
     .then(async snapshot => {
       if (snapshot.empty) {
+        // Parse the job offer
+        let metadata = {};
+        const functionURL =
+          "https://us-central1-lejobhq.cloudfunctions.net/parse-job-info";
+        await fetch(functionURL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ url })
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.error) {
+              throw new Error(
+                `Error ${data.error.status}: "${
+                  data.error.text
+                }" for Cloud Function "${functionURL}"`
+              );
+            }
+            metadata = data;
+          })
+          .catch(err => console.error(err));
+
+        // Save the new job
         const timestamp = FieldValue.serverTimestamp();
         const newJob = await jobsRef.add({
           url: url,
