@@ -73,6 +73,7 @@ const post = async (req, res) => {
           timeline: [
             {
               status: STATUS.CREATED,
+              metadata: req.body.metadata || {},
               date: Date.now()
             }
           ],
