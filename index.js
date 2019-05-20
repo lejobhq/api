@@ -24,14 +24,6 @@ require("dotenv").config({
 app.use("/auth", require("./routes/auth"));
 app.use("/api", validateSession, require("./routes/api"));
 
-// Serve client static files
-const clientPath = "client";
-
-app.use(express.static(clientPath));
-app.get("*", (req, res) => {
-  res.sendFile("/index.html", { root: clientPath });
-});
-
 // Start the server
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
