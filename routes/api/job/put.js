@@ -15,6 +15,7 @@ const put = async (req, res) => {
   await usersJobsRef.doc(usersJobId).update({
     timeline: FieldValue.arrayUnion({
       status: STATUS[req.body.status],
+      metadata: req.body.metadata || {},
       date: Date.now()
     }),
     updated_at: timestamp

@@ -16,7 +16,7 @@ const post = async (req, res) => {
     .then(async snapshot => {
       if (snapshot.empty) {
         // Parse the job offer
-        let metadata = {};
+        let jobInfo = {};
         const functionURL =
           "https://us-central1-lejobhq.cloudfunctions.net/parse-job-info";
         await fetch(functionURL, {
@@ -35,7 +35,7 @@ const post = async (req, res) => {
                 }" for Cloud Function "${functionURL}"`
               );
             }
-            metadata = data;
+            jobInfo = data;
           })
           .catch(err => console.error(err));
 
@@ -43,7 +43,7 @@ const post = async (req, res) => {
         const timestamp = FieldValue.serverTimestamp();
         const newJob = await jobsRef.add({
           url: url,
-          ...metadata,
+          ...jobInfo,
           created_at: timestamp,
           updated_at: timestamp
         });
