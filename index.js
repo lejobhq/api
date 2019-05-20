@@ -9,7 +9,7 @@ const app = express();
 app.use(helmet());
 app.use(
   cors({
-    origin: ["https://www.lejobhq.com"],
+    origin: ["https://www.lejobhq.com", "http://localhost:1234"],
     methods: ["GET", "POST", "PUT", "OPTIONS"]
   })
 );
