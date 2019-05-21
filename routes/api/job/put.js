@@ -13,6 +13,7 @@ const put = async (req, res) => {
 
   const timestamp = FieldValue.serverTimestamp();
   await usersJobsRef.doc(usersJobId).update({
+    status: STATUS[req.body.status],
     timeline: FieldValue.arrayUnion({
       status: STATUS[req.body.status],
       metadata: req.body.metadata || {},

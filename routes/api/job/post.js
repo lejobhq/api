@@ -70,6 +70,7 @@ const post = async (req, res) => {
         const newUsersJob = await usersJobsRef.add({
           id: jobId,
           url: url,
+          status: STATUS.CREATED,
           timeline: [
             {
               status: STATUS.CREATED,
