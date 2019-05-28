@@ -2,6 +2,6 @@ const express = require("express");
 const router = express.Router();
 
 router.post("/", require("./post"));
-router.put("/", require("./put"));
+router.patch("/:id", require("./patch"));
 
 module.exports = router;

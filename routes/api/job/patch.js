@@ -3,9 +3,9 @@ const FieldValue = require("firebase-admin").firestore.FieldValue;
 const db = require("../../../db");
 const STATUS = require("../../../consts").STATUS;
 
-const put = async (req, res) => {
+const patch = async (req, res) => {
   // TODO: Input validation
-  const usersJobId = req.body.usersJobId;
+  const usersJobId = req.params.id;
   const usersJobsRef = db
     .collection("users")
     .doc(req.userId)
@@ -27,4 +27,4 @@ const put = async (req, res) => {
   return;
 };
 
-module.exports = put;
+module.exports = patch;
