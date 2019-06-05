@@ -9,14 +9,16 @@ const post = async (req, res) => {
   const url = req.body.url.split("?")[0]; // Remove search string
 
   // Save the job in the "jobs" collection
+  let jobInfo = { isNew: false };
   const jobsRef = db.collection("jobs");
   const jobId = await jobsRef
     .where("url", "==", url)
     .get()
     .then(async snapshot => {
       if (snapshot.empty) {
+        jobInfo.isNew = true;
+
         // Parse the job offer
-        let jobInfo = {};
         const functionURL =
           "https://us-central1-lejobhq.cloudfunctions.net/parse-job-info";
         await fetch(functionURL, {
@@ -35,7 +37,7 @@ const post = async (req, res) => {
                 }" for Cloud Function "${functionURL}"`
               );
             }
-            jobInfo = data;
+            jobInfo = { ...jobInfo, ...data };
           })
           .catch(err => console.error(err));
 
@@ -81,7 +83,7 @@ const post = async (req, res) => {
           created_at: timestamp,
           updated_at: timestamp
         });
-        res.send({ data: { id: newUsersJob.id } });
+        res.send({ data: { id: jobId, ...jobInfo } });
         return;
       }
       res.status(400);
