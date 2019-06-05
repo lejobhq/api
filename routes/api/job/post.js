@@ -83,7 +83,7 @@ const post = async (req, res) => {
           created_at: timestamp,
           updated_at: timestamp
         });
-        res.send({ data: { id: newUsersJob.id, info: jobInfo } });
+        res.send({ data: { id: jobId, ...jobInfo } });
         return;
       }
       res.status(400);
