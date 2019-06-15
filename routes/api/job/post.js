@@ -37,6 +37,11 @@ const post = async (req, res) => {
                 }" for Cloud Function "${functionURL}"`
               );
             }
+
+            if (data) {
+              jobInfo.isNew = false;
+            }
+
             jobInfo = { ...jobInfo, ...data };
           })
           .catch(err => console.error(err));
