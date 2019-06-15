@@ -53,8 +53,10 @@ const post = async (req, res) => {
           });
         }
 
-        // TODO: generate and send JWT
-        const jwt_token = jwt.sign({ userId }, process.env.JWT_SECRET, {});
+        // Generate and send JWT
+        const jwt_token = jwt.sign({ userId }, process.env.JWT_SECRET, {
+          expiresIn: "7d"
+        });
 
         res.status(200);
         res.send({ jwt: jwt_token });
